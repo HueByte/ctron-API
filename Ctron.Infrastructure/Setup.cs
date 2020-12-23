@@ -12,6 +12,6 @@ namespace Ctron.Infrastructure
         public static void AddDbContext(this IServiceCollection services, string connectionString) =>
             services.AddDbContext<AppDbContext>(
                 options =>
-                options.UseMySql(connectionString));
+                options.UseMySql(connectionString, x => x.MigrationsAssembly("Ctron.Infrastructure")));
     }
 }

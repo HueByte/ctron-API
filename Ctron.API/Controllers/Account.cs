@@ -28,21 +28,14 @@ namespace Ctron.API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> LoginService([FromBody] UserDTO login)
         {
-            IActionResult response = Unauthorized();
-            try
+            var result = await _auth.AuthenticateUser(login);
+
+            if(result.isSuccess)
             {
-                var user = await _auth.AuthenticateUser(login);
-                if (user != null)
-                {
-                    return Ok(user);
-                }
-            }
-            catch
-            {
-                response = StatusCode(500);
+                return Ok(result);
             }
 
-            return response;   
+            return Unauthorized(result);
         }
         
         //POST: api/Account/register
@@ -51,14 +44,13 @@ namespace Ctron.API.Controllers
         public async Task<IActionResult> RegisterService([FromBody] RegisterModel user)
         {
             var result = await _auth.Register(user);
-            if (result)
+
+            if(result.isSuccess)
             {
-                return Ok();
+                return Ok(result);
             }
-            else
-            {
-                return BadRequest();
-            }
+
+            return BadRequest(result);
         }
     }
 }

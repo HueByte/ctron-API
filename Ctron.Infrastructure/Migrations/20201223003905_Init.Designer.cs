@@ -9,15 +9,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Ctron.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20201111193003_init")]
-    partial class init
+    [Migration("20201223003905_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 64)
-                .HasAnnotation("ProductVersion", "5.0.0");
+                .HasAnnotation("ProductVersion", "5.0.1");
 
             modelBuilder.Entity("Ctron.Infrastructure.Models.ApplicationUser", b =>
                 {

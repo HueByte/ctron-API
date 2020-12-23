@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Ctron.API.DTO;
 using Ctron.API.Extensions;
+using Ctron.API.Services;
 using Ctron.Infrastructure.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -23,7 +24,7 @@ namespace Ctron.API.Authentication
             _jwtAuth = jwtAuth;
         }
 
-        public async Task<VerifiedUser> AuthenticateUser(UserDTO userModel)
+        public async Task<ApiResponse<VerifiedUser>> AuthenticateUser(UserDTO userModel)
         {
             //Get user 
             var user = await _userManager.FindByNameAsync(userModel.UserName);
@@ -39,29 +40,33 @@ namespace Ctron.API.Authentication
 
                 //Generate and assign JWT token to verified user
                 verifiedUser = _jwtAuth.GenerateJsonWebToken(verifiedUser);
-                return verifiedUser;
+                return Response<VerifiedUser>.Create(verifiedUser, true, "Logged in");
             }
 
-            return null;
+            return Response<VerifiedUser>.Create(null, false, "Couldn't find that user");
         }
 
-        public async Task<bool> Register(RegisterModel userModel) 
+        public async Task<ApiResponse<int>> Register(RegisterModel userModel) 
         {
+            //check if user exists
             var userExists = await _userManager.FindByNameAsync(userModel.Username);
-            if(userExists != null)
-                return false;
-            
+            if (userExists != null)
+            {
+                return Response<int>.Create(0, false, "This user already exists");
+            }
+
             ApplicationUser user = new ApplicationUser()
             {
                 Email = userModel.Email,
                 UserName = userModel.Username,
             };
 
+            //create user
             var result = await _userManager.CreateAsync(user, userModel.Password);
-            if(!result.Succeeded)
-                return false;
-            
-            return true;
+            if (!result.Succeeded)
+                return Response<int>.Create(0, false, "Couldn't create user");
+
+            return Response<int>.Create(0, true, "Created new user");
         }
 
         //public async Task AddRoles()
