@@ -20,7 +20,6 @@ namespace Ctron.API.Configuration
     {
         private IServiceCollection _services;
         private IConfiguration _config;
-
         public ModuleConfiguration(IServiceCollection services, IConfiguration config)
         {
             _services = services;
@@ -32,6 +31,7 @@ namespace Ctron.API.Configuration
             #region Configure Services
             _services.AddScoped<IJwtAuthentication, JwtAuthentication>();
             _services.AddScoped<IApiAuthentication, ApiAuthentication>();
+            _services.AddScoped<AdminConfiguration>();
             #endregion
 
             #region Configure Variables
@@ -59,7 +59,12 @@ namespace Ctron.API.Configuration
             });
 
             //JWT
-            _services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            _services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
                 .AddJwtBearer(options =>
                 {
                     options.TokenValidationParameters = new TokenValidationParameters
@@ -73,6 +78,8 @@ namespace Ctron.API.Configuration
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]))
                     };
                 });
+
+            _services.AddAuthorization();
         }
     }
 }
