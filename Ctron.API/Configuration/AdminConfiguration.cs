@@ -1,4 +1,7 @@
+using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
+using Ctron.API.Entities;
 using Ctron.Infrastructure.Models;
 using Microsoft.AspNetCore.Identity;
 
@@ -16,14 +19,17 @@ namespace Ctron.API.Configuration
 
         public async Task SeedAdminAndRoles()
         {
-            //check if roles exist
-            var userRole = await _roleManager.FindByNameAsync("user");
-            var adminRole = await _roleManager.FindByNameAsync("admin");
-                                    
-            if(userRole == null)
-                await _roleManager.CreateAsync(new IdentityRole { Name = "user" } );
-            if(adminRole == null)
-                await _roleManager.CreateAsync(new IdentityRole { Name = "admin" } );
+            //Get role name constants from Roles class
+            var codeSideRoles = typeof(Roles).GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
+                .Where(fi => fi.IsLiteral && !fi.IsInitOnly).ToList();
+
+            //Check if role exists and create if it's necessary 
+            foreach(var role in codeSideRoles)
+            {
+                var managerRole = await _roleManager.FindByNameAsync(role.GetRawConstantValue() as string);
+                if(managerRole == null)
+                    await _roleManager.CreateAsync(new IdentityRole { Name = (string)role.GetRawConstantValue() });
+            }
             
             //check if admin exists and his roles
             var admin = await _userManager.FindByNameAsync("admin");
