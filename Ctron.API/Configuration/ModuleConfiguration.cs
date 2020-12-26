@@ -12,6 +12,7 @@ using Ctron.Infrastructure;
 using Ctron.API.Authentication;
 using Ctron.Infrastructure.Models;
 using Microsoft.AspNetCore.Identity;
+using Ctron.API.Services;
 
 namespace Ctron.API.Configuration
 {
@@ -80,6 +81,11 @@ namespace Ctron.API.Configuration
                 });
 
             _services.AddAuthorization();
+        }
+
+        public void ConfigureCustomStartUpService()
+        {
+            _services.AddHostedService<CustomStartService>();
         }
     }
 }

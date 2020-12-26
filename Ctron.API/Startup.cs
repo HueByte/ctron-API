@@ -40,6 +40,7 @@ namespace Ctron.API
             conf.ConfigureServices();
             conf.ConfigureDatabase();
             conf.ConfigureSecurity();
+            conf.ConfigureCustomStartUpService();
 
             services.AddCors(o => o.AddDefaultPolicy(builder =>
             {
@@ -47,10 +48,8 @@ namespace Ctron.API
                         .AllowAnyHeader()
                         .AllowAnyMethod();
             }));
-
-            Console.WriteLine("Services loaded");
             
-            services.BuildServiceProvider().GetRequiredService<AdminConfiguration>().SeedAdminAndRoles();
+            //services.BuildServiceProvider().GetRequiredService<AdminConfiguration>().SeedAdminAndRoles();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
