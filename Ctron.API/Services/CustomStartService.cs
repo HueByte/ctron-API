@@ -22,21 +22,13 @@ namespace Ctron.API.Services
         {
             using (var scope = _serviceProvider.CreateScope())
             {
-                var x = scope.ServiceProvider.GetRequiredService<AdminConfiguration>();
-                await x.SeedAdminAndRoles();
+                var adminConf = scope.ServiceProvider.GetRequiredService<AdminConfiguration>();
+                await adminConf.SeedAdminAndRoles();
             }
-            // x.SeedAdminAndRoles();
-            //_admin.SeedAdminAndRoles();
         }
 
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
-        }
+        public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
-        public void Dispose()
-        {
-
-        }
+        public void Dispose() { }
     }
 }
